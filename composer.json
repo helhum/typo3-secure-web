@@ -1,0 +1,32 @@
+{
+    "name": "helhum/typo3-no-symlink-install",
+    "description": "Set up TYPO3 web directory without symlinks (for Windows)",
+    "type": "library",
+    "license": "GPL-2.0+",
+    "authors": [
+        {
+            "name": "Helmut Hummel",
+            "email": "info@helhum.io",
+            "homepage": "https://helhum.io",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "typo3/cms-composer-installers": "^1.4",
+        "typo3/cms": "^7.6 || ^8.7"
+    },
+    "require-dev": {
+        "typo3/cms": "^7.6"
+    },
+    "autoload": {
+        "psr-4": {
+            "Helhum\\Typo3NoSymlinkInstall\\": "src"
+        }
+    },
+    "extra": {
+        "typo3/cms": {
+            "cms-package-dir": "{$vendor-dir}/typo3/cms",
+            "web-dir": "web"
+        }
+    }
+}
