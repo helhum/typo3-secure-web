@@ -17,6 +17,7 @@ namespace Helhum\Typo3NoSymlinkInstall\Composer\InstallerScripts;
 
 use Composer\Composer;
 use Composer\IO\IOInterface;
+use Composer\Package\PackageInterface;
 use Composer\Script\Event;
 use Composer\Semver\Constraint\EmptyConstraint;
 use TYPO3\CMS\Composer\Plugin\Config;
@@ -59,6 +60,11 @@ class WebDirectory implements InstallerScript
     private $pluginConfig;
 
     /**
+     * @var bool
+     */
+    private $isDevMode = false;
+
+    /**
      * Prepare the web directory with symlinks
      *
      * @param Event $event
@@ -70,14 +76,15 @@ class WebDirectory implements InstallerScript
         $this->composer = $event->getComposer();
         $this->filesystem = new Filesystem();
         $this->pluginConfig = Config::load($this->composer);
+        $this->isDevMode = $event->isDevMode();
 
         $webDir = $this->filesystem->normalizePath($this->pluginConfig->get('web-dir'));
         $backendDir = $webDir . self::$typo3Dir;
         $this->filesystem->ensureDirectoryExists($backendDir);
 
         $localRepository = $this->composer->getRepositoryManager()->getLocalRepository();
-        $package = $localRepository->findPackage('typo3/cms', new EmptyConstraint());
-        $sourcesDir = $this->composer->getInstallationManager()->getInstallPath($package);
+        $typo3Package = $localRepository->findPackage('typo3/cms', new EmptyConstraint());
+        $sourcesDir = $this->composer->getInstallationManager()->getInstallPath($typo3Package);
 
         $source = $sourcesDir . self::$typo3Dir . self::$systemExtensionsDir;
         $target = $backendDir . self::$systemExtensionsDir;
@@ -85,8 +92,53 @@ class WebDirectory implements InstallerScript
         if (is_dir($target)) {
             $this->filesystem->removeDirectory($target);
         }
-        $this->filesystem->copy($source, $target);
+        foreach ($this->getCoreExtensionKeysFromTypo3Package($typo3Package) as $coreExtKey) {
+            $this->filesystem->copy($source . '/' . $coreExtKey, $target . '/' . $coreExtKey);
+        }
 
         return true;
+    }
+
+
+    /**
+     * @param PackageInterface $typo3Package
+     * @return array
+     */
+    private function getCoreExtensionKeysFromTypo3Package(PackageInterface $typo3Package): array
+    {
+        $coreExtensionKeys = [];
+        $frameworkPackages = [];
+        foreach ($typo3Package->getReplaces() as $name => $_) {
+            if (strpos($name, 'typo3/cms-') === 0) {
+                $frameworkPackages[] = $name;
+            }
+        }
+        $installedPackages = $this->composer->getRepositoryManager()->getLocalRepository()->getCanonicalPackages();
+        $rootPackage = $this->composer->getPackage();
+        $installedPackages[$rootPackage->getName()] = $rootPackage;
+        foreach ($installedPackages as $package) {
+            $requires = $package->getRequires();
+            if ($package === $rootPackage && $this->isDevMode) {
+                $requires = array_merge($requires, $package->getDevRequires());
+            }
+            foreach ($requires as $name => $link) {
+                if (in_array($name, $frameworkPackages, true)) {
+                    $extensionKey = $this->determineExtKeyFromPackageName($name);
+                    $this->io->writeError(sprintf('The package "%s" requires: "%s"', $package->getName(), $name), true, IOInterface::DEBUG);
+                    $this->io->writeError(sprintf('The extension key for package "%s" is: "%s"', $name, $extensionKey), true, IOInterface::DEBUG);
+                    $coreExtensionKeys[$name] = $extensionKey;
+                }
+            }
+        }
+        return $coreExtensionKeys;
+    }
+
+    /**
+     * @param string $packageName
+     * @return string
+     */
+    private function determineExtKeyFromPackageName(string $packageName): string
+    {
+        return str_replace(['typo3/cms-', '-'], ['', '_'], $packageName);
     }
 }
