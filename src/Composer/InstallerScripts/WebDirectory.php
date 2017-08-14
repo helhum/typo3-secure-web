@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-namespace Helhum\Typo3NoSymlinkInstall\Composer\InstallerScripts;
+namespace Helhum\Typo3SecureWeb\Composer\InstallerScripts;
 
 /*
  * This file is part of the TYPO3 project.
@@ -19,25 +19,31 @@ use Composer\Composer;
 use Composer\IO\IOInterface;
 use Composer\Package\PackageInterface;
 use Composer\Script\Event;
-use Composer\Semver\Constraint\EmptyConstraint;
+use Composer\Util\Platform;
 use TYPO3\CMS\Composer\Plugin\Config;
 use TYPO3\CMS\Composer\Plugin\Core\InstallerScript;
+use TYPO3\CMS\Composer\Plugin\Util\ExtensionKeyResolver;
 use TYPO3\CMS\Composer\Plugin\Util\Filesystem;
 
 /**
- * Setting up TYPO3 web directory
+ * Setting up TYPO3 web directory (link public assets)
  */
 class WebDirectory implements InstallerScript
 {
     /**
      * @var string
      */
-    private static $typo3Dir = '/typo3';
+    private static $systemExtensionsDir = '/typo3/sysext/';
 
     /**
      * @var string
      */
-    private static $systemExtensionsDir = '/sysext';
+    private static $extensionsDir = '/typo3conf/ext/';
+
+    /**
+     * @var string
+     */
+    private static $resourcesDir = '/Resources/Public';
 
     /**
      * @var IOInterface
@@ -78,27 +84,68 @@ class WebDirectory implements InstallerScript
         $this->pluginConfig = Config::load($this->composer);
         $this->isDevMode = $event->isDevMode();
 
-        $webDir = $this->filesystem->normalizePath($this->pluginConfig->get('web-dir'));
-        $backendDir = $webDir . self::$typo3Dir;
-        $this->filesystem->ensureDirectoryExists($backendDir);
-
-        $localRepository = $this->composer->getRepositoryManager()->getLocalRepository();
-        $typo3Package = $localRepository->findPackage('typo3/cms', new EmptyConstraint());
-        $sourcesDir = $this->composer->getInstallationManager()->getInstallPath($typo3Package);
-
-        $source = $sourcesDir . self::$typo3Dir . self::$systemExtensionsDir;
-        $target = $backendDir . self::$systemExtensionsDir;
-
-        if (is_dir($target)) {
-            $this->filesystem->removeDirectory($target);
+        foreach ($this->getInstalledExtensions() as $paths) {
+            if (!is_dir($paths['source'])) {
+                continue;
+            }
+            $this->linkDir($paths['source'], $paths['target']);
         }
-        foreach ($this->getCoreExtensionKeysFromTypo3Package($typo3Package) as $coreExtKey) {
-            $this->filesystem->copy($source . '/' . $coreExtKey, $target . '/' . $coreExtKey);
+        $webDir = $this->filesystem->normalizePath($this->pluginConfig->get('web-dir'));
+        $rootDir = $this->filesystem->normalizePath($this->pluginConfig->get('root-dir'));
+
+        $links = [
+            'fileadmin',
+            'typo3temp/assets'
+        ];
+
+        foreach ($links as $link) {
+            $this->linkDir($rootDir . '/' . $link, $webDir . '/' . $link);
         }
 
         return true;
     }
 
+    private function linkDir($source, $target)
+    {
+        $fileSystem = new \Symfony\Component\Filesystem\Filesystem();
+        if (Platform::isWindows()) {
+            // Implement symlinks as NTFS junctions on Windows
+            $this->filesystem->junction($source, $target);
+        } else {
+            $absolutePath = $target;
+            if (!$this->filesystem->isAbsolutePath($absolutePath)) {
+                $absolutePath = getcwd() . DIRECTORY_SEPARATOR . $target;
+            }
+            $shortestPath = $this->filesystem->findShortestPath($absolutePath, $source);
+            $target = rtrim($target, '/');
+            $fileSystem->symlink($shortestPath, $target);
+        }
+    }
+
+    private function getInstalledExtensions()
+    {
+        $installedPackages = $this->composer->getRepositoryManager()->getLocalRepository()->getCanonicalPackages();
+        $installedExtensions = [];
+        $webDir = $this->filesystem->normalizePath($this->pluginConfig->get('web-dir'));
+        foreach ($installedPackages as $package) {
+            if (in_array($package->getType(), ['typo3-cms-extension', 'typo3-cms-framework'], true)) {
+                $extKey = ExtensionKeyResolver::resolve($package);
+                $installedExtensions[$extKey]['source'] = $this->composer->getInstallationManager()->getInstallPath($package) . self::$resourcesDir;
+                $installedExtensions[$extKey]['target'] = $webDir . self::$extensionsDir . $extKey . self::$resourcesDir;
+                if ($package->getType() === 'typo3-cms-framework') {
+                    $installedExtensions[$extKey]['target'] = $webDir . self::$systemExtensionsDir . $extKey . self::$resourcesDir;
+                }
+            }
+            if ($package->getType() === 'typo3-cms-core') {
+                $coreInstallPath = $this->composer->getInstallationManager()->getInstallPath($package);
+                foreach ($this->getCoreExtensionKeysFromTypo3Package($package) as $coreExtKey) {
+                    $installedExtensions[$coreExtKey]['source'] = $coreInstallPath . self::$systemExtensionsDir . $coreExtKey . self::$resourcesDir;
+                    $installedExtensions[$coreExtKey]['target'] = $webDir . self::$systemExtensionsDir . $coreExtKey . self::$resourcesDir;
+                }
+            }
+        }
+        return $installedExtensions;
+    }
 
     /**
      * @param PackageInterface $typo3Package
@@ -109,7 +156,7 @@ class WebDirectory implements InstallerScript
         $coreExtensionKeys = [];
         $frameworkPackages = [];
         foreach ($typo3Package->getReplaces() as $name => $_) {
-            if (strpos($name, 'typo3/cms-') === 0) {
+            if (is_string($name) && strpos($name, 'typo3/cms-') === 0) {
                 $frameworkPackages[] = $name;
             }
         }
@@ -121,7 +168,7 @@ class WebDirectory implements InstallerScript
             if ($package === $rootPackage && $this->isDevMode) {
                 $requires = array_merge($requires, $package->getDevRequires());
             }
-            foreach ($requires as $name => $link) {
+            foreach ($requires as $name => $_) {
                 if (in_array($name, $frameworkPackages, true)) {
                     $extensionKey = $this->determineExtKeyFromPackageName($name);
                     $this->io->writeError(sprintf('The package "%s" requires: "%s"', $package->getName(), $name), true, IOInterface::DEBUG);

@@ -1,6 +1,6 @@
 {
-    "name": "helhum/typo3-no-symlink-install",
-    "description": "Set up TYPO3 web directory without symlinks (for Windows)",
+    "name": "helhum/typo3-secure-web",
+    "description": "Set up secure TYPO3 web directory containing only public assets",
     "type": "library",
     "license": "GPL-2.0+",
     "authors": [
@@ -12,32 +12,25 @@
         }
     ],
     "require": {
-        "typo3/cms-composer-installers": "^1.4",
-        "typo3/cms": "^7.6 || ^8.7",
-        "typo3/cms-backend": "^7.6 || ^8.7",
-        "typo3/cms-core": "^7.6 || ^8.7",
-        "typo3/cms-extbase": "^7.6 || ^8.7",
-        "typo3/cms-extensionmanager": "^7.6 || ^8.7",
-        "typo3/cms-filelist": "^7.6 || ^8.7",
-        "typo3/cms-fluid": "^7.6 || ^8.7",
-        "typo3/cms-frontend": "^7.6 || ^8.7",
-        "typo3/cms-install": "^7.6 || ^8.7",
-        "typo3/cms-lang": "^7.6 || ^8.7",
-        "typo3/cms-recordlist": "^7.6 || ^8.7",
-        "typo3/cms-saltedpassword": "^7.6 || ^8.7"
+        "helhum/typo3-composer-setup": "^0.1"
     },
     "require-dev": {
-        "typo3/cms": "^7.6"
+        "typo3/cms": "dev-TYPO3_8-7 as 8.7.5",
+        "typo3-console/php-server-command": "^0.1.0"
     },
     "autoload": {
         "psr-4": {
-            "Helhum\\Typo3NoSymlinkInstall\\": "src"
+            "Helhum\\Typo3SecureWeb\\": "src"
         }
     },
     "extra": {
         "typo3/cms": {
             "cms-package-dir": "{$vendor-dir}/typo3/cms",
+            "root-dir": "typo3",
             "web-dir": "web"
+        },
+        "helhum/typo3-console": {
+            "install-extension-dummy": "0"
         }
     }
 }
