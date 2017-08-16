@@ -109,6 +109,7 @@ class WebDirectory implements InstallerScript
     {
         $fileSystem = new \Symfony\Component\Filesystem\Filesystem();
         if (Platform::isWindows()) {
+            $this->filesystem->ensureDirectoryExists(dirname($target));
             // Implement symlinks as NTFS junctions on Windows
             $this->filesystem->junction($source, $target);
         } else {
