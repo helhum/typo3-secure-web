@@ -109,6 +109,8 @@ class WebDirectory implements InstallerScript
     {
         $fileSystem = new \Symfony\Component\Filesystem\Filesystem();
         if (Platform::isWindows()) {
+            // junctions in contrast to symlinks need the source dir to exist.
+            $this->filesystem->ensureDirectoryExists($source);
             $this->filesystem->ensureDirectoryExists(dirname($target));
             // Implement symlinks as NTFS junctions on Windows
             $this->filesystem->junction($source, $target);
