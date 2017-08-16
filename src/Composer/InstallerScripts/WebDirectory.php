@@ -84,48 +84,47 @@ class WebDirectory implements InstallerScript
         $this->pluginConfig = Config::load($this->composer);
         $this->isDevMode = $event->isDevMode();
 
-        foreach ($this->getInstalledExtensions() as $paths) {
-            if (!is_dir($paths['source'])) {
+        $links = $this->getLinksFromInstalledExtensions();
+        $links = array_merge($links, $this->getCoreLinks());
+
+        foreach ($links as $paths) {
+            if (!is_dir($paths['source']) || is_dir($paths['target'])) {
                 continue;
             }
             $this->linkDir($paths['source'], $paths['target']);
         }
-        $webDir = $this->filesystem->normalizePath($this->pluginConfig->get('web-dir'));
-        $rootDir = $this->filesystem->normalizePath($this->pluginConfig->get('root-dir'));
 
-        $links = [
-            'fileadmin',
-            'typo3temp/assets'
-        ];
-
-        foreach ($links as $link) {
-            $this->linkDir($rootDir . '/' . $link, $webDir . '/' . $link);
-        }
+        $this->removeStaleLinks($links);
 
         return true;
     }
 
-    private function linkDir($source, $target)
+    private function getCoreLinks(): array
     {
-        $fileSystem = new \Symfony\Component\Filesystem\Filesystem();
-        if (Platform::isWindows()) {
-            // junctions in contrast to symlinks need the source dir to exist.
+        $links = [];
+
+        $coreLinks = [
+            'fileadmin',
+            'typo3temp/assets'
+        ];
+
+        $webDir = $this->filesystem->normalizePath($this->pluginConfig->get('web-dir'));
+        $rootDir = $this->filesystem->normalizePath($this->pluginConfig->get('root-dir'));
+
+        foreach ($coreLinks as $link) {
+            $source = $rootDir . '/' . $link;
+            $target = $webDir . '/' . $link;
             $this->filesystem->ensureDirectoryExists($source);
-            $this->filesystem->ensureDirectoryExists(dirname($target));
-            // Implement symlinks as NTFS junctions on Windows
-            $this->filesystem->junction($source, $target);
-        } else {
-            $absolutePath = $target;
-            if (!$this->filesystem->isAbsolutePath($absolutePath)) {
-                $absolutePath = getcwd() . DIRECTORY_SEPARATOR . $target;
-            }
-            $shortestPath = $this->filesystem->findShortestPath($absolutePath, $source);
-            $target = rtrim($target, '/');
-            $fileSystem->symlink($shortestPath, $target);
+            $links[] = [
+                'source' => $source,
+                'target' => $target,
+            ];
         }
+
+        return $links;
     }
 
-    private function getInstalledExtensions()
+    private function getLinksFromInstalledExtensions(): array
     {
         $installedPackages = $this->composer->getRepositoryManager()->getLocalRepository()->getCanonicalPackages();
         $installedExtensions = [];
@@ -148,6 +147,25 @@ class WebDirectory implements InstallerScript
             }
         }
         return $installedExtensions;
+    }
+
+    private function removeStaleLinks(array $currentLinks)
+    {
+        $currentTargets = [];
+        foreach ($currentLinks as $currentLink) {
+            $currentTargets[] = $this->filesystem->normalizePath($currentLink['target']);
+        }
+        $fileSystem = new \Symfony\Component\Filesystem\Filesystem();
+        $targetDir = $this->pluginConfig->get('web-dir');
+        // Iterate in destination folder to remove obsolete entries
+        $flags = \FilesystemIterator::SKIP_DOTS;
+        $deleteIterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($targetDir, $flags), \RecursiveIteratorIterator::CHILD_FIRST);
+        foreach ($deleteIterator as $fileOrFolder) {
+            $normalizedPath = $this->filesystem->normalizePath($fileOrFolder->getPathname());
+            if (strpos($normalizedPath, self::$resourcesDir) !== false && !in_array($normalizedPath, $currentTargets, true)) {
+                $fileSystem->remove($fileOrFolder);
+            }
+        }
     }
 
     /**
@@ -190,5 +208,23 @@ class WebDirectory implements InstallerScript
     private function determineExtKeyFromPackageName(string $packageName): string
     {
         return str_replace(['typo3/cms-', '-'], ['', '_'], $packageName);
+    }
+
+    private function linkDir($source, $target)
+    {
+        $fileSystem = new \Symfony\Component\Filesystem\Filesystem();
+        if (Platform::isWindows()) {
+            $this->filesystem->ensureDirectoryExists(dirname($target));
+            // Implement symlinks as NTFS junctions on Windows
+            $this->filesystem->junction($source, $target);
+        } else {
+            $absolutePath = $target;
+            if (!$this->filesystem->isAbsolutePath($absolutePath)) {
+                $absolutePath = getcwd() . DIRECTORY_SEPARATOR . $target;
+            }
+            $shortestPath = $this->filesystem->findShortestPath($absolutePath, $source);
+            $target = rtrim($target, '/');
+            $fileSystem->symlink($shortestPath, $target);
+        }
     }
 }
