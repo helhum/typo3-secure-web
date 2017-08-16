@@ -163,7 +163,11 @@ class WebDirectory implements InstallerScript
         foreach ($deleteIterator as $fileOrFolder) {
             $normalizedPath = $this->filesystem->normalizePath($fileOrFolder->getPathname());
             if (strpos($normalizedPath, self::$resourcesDir) !== false && !in_array($normalizedPath, $currentTargets, true)) {
-                $fileSystem->remove($fileOrFolder);
+                if ($this->filesystem->isJunction($normalizedPath)) {
+                    $this->filesystem->removeJunction($normalizedPath);
+                } else {
+                    $fileSystem->remove($fileOrFolder);
+                }
             }
         }
     }
