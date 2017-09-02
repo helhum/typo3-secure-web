@@ -12,7 +12,7 @@
         }
     ],
     "require": {
-        "helhum/typo3-composer-setup": "^0.1"
+        "helhum/typo3-composer-setup": "^0.2"
     },
     "require-dev": {
         "typo3/cms": "dev-TYPO3_8-7 as 8.7.5",
