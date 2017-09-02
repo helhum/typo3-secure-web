@@ -44,17 +44,17 @@ class InstallerScripts implements InstallerScriptsRegistration
         if ($typo3CmsPackage && !class_exists(\Helhum\Typo3NoSymlinkInstall\Composer\InstallerScripts::class)) {
             $scriptDispatcher->addInstallerScript(
                 new RootDirectory($rootDir, RootDirectory::PUBLISH_STRATEGY_LINK),
-                75
+                90
             );
         }
         if ($rootDir !== $webDir) {
             $scriptDispatcher->addInstallerScript(
                 new WebDirectory(),
-                60
+                70
             );
             $scriptDispatcher->addInstallerScript(
                 new DummyEntryPoints(),
-                55
+                70
             );
         } else {
             $event->getIO()->writeError('<warning>The config option web-dir and root-dir are set to the same value. Skipped web directory setup.</warning>');
