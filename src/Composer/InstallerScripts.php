@@ -17,9 +17,9 @@ namespace Helhum\Typo3SecureWeb\Composer;
 
 use Composer\Script\Event;
 use Composer\Semver\Constraint\EmptyConstraint;
-use Helhum\Typo3ComposerSetup\Composer\InstallerScripts\RootDirectory;
-use Helhum\Typo3SecureWeb\Composer\InstallerScripts\DummyEntryPoints;
-use Helhum\Typo3SecureWeb\Composer\InstallerScripts\WebDirectory;
+use Helhum\Typo3ComposerSetup\Composer\InstallerScript\RootDirectory;
+use Helhum\Typo3SecureWeb\Composer\InstallerScript\DummyEntryPoints;
+use Helhum\Typo3SecureWeb\Composer\InstallerScript\WebDirectory;
 use TYPO3\CMS\Composer\Plugin\Config;
 use TYPO3\CMS\Composer\Plugin\Core\InstallerScriptsRegistration;
 use TYPO3\CMS\Composer\Plugin\Core\ScriptDispatcher;

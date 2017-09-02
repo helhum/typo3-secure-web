@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-namespace Helhum\Typo3SecureWeb\Composer\InstallerScripts;
+namespace Helhum\Typo3SecureWeb\Composer\InstallerScript;
 
 /*
  * This file is part of the TYPO3 project.
