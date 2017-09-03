@@ -42,7 +42,6 @@ class DummyEntryPoints implements InstallerScript
             '/index.php',
             '/typo3/index.php',
             '/typo3/install.php',
-            '/typo3/sysext/install/Start/Install.php',
         ];
 
         foreach ($dummyEntryPoints as $dummyEntryPoint) {
