@@ -155,19 +155,18 @@ class WebDirectory implements InstallerScript
         foreach ($currentLinks as $currentLink) {
             $currentTargets[] = $this->filesystem->normalizePath($currentLink['target']);
         }
-        $fileSystem = new \Symfony\Component\Filesystem\Filesystem();
         $targetDir = $this->pluginConfig->get('web-dir');
-        // Iterate in destination folder to remove obsolete entries
-        $flags = \FilesystemIterator::SKIP_DOTS;
-        $deleteIterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($targetDir, $flags), \RecursiveIteratorIterator::CHILD_FIRST);
-        foreach ($deleteIterator as $fileOrFolder) {
-            $normalizedPath = $this->filesystem->normalizePath($fileOrFolder->getPathname());
-            if (strpos($normalizedPath, self::$resourcesDir) !== false && !in_array($normalizedPath, $currentTargets, true)) {
-                if ($this->filesystem->isJunction($normalizedPath)) {
-                    $this->filesystem->removeJunction($normalizedPath);
-                } else {
-                    $fileSystem->remove($fileOrFolder);
+        $currentExtensionDirs = glob($targetDir . '/typo3conf/ext/*' . self::$resourcesDir);
+        $currentSystemExtensionDirs = glob($targetDir . '/typo3/sysext/*' . self::$resourcesDir);
+
+        $fileSystem = new \Symfony\Component\Filesystem\Filesystem();
+        foreach (array_merge($currentExtensionDirs, $currentSystemExtensionDirs) as $dir) {
+            $dir = $this->filesystem->normalizePath($dir);
+            if (!in_array($dir, $currentTargets, true)) {
+                if ($this->filesystem->isJunction($dir)) {
+                    $this->filesystem->removeJunction($dir);
                 }
+                $fileSystem->remove(str_replace(self::$resourcesDir, '', $dir));
             }
         }
     }
