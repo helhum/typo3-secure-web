@@ -14,8 +14,12 @@
     "require": {
         "helhum/typo3-composer-setup": ">=0.2.0 <=0.4"
     },
+    "conflict": {
+        "typo3/cms": "<8.7.8",
+        "typo3/cms-core": "<8.7.8"
+    },
     "require-dev": {
-        "typo3/cms": "dev-TYPO3_8-7 as 8.7.5",
+        "typo3/cms": "dev-TYPO3_8-7 as 8.7.8",
         "typo3-console/php-server-command": "^0.1.0"
     },
     "autoload": {
