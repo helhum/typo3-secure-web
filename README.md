@@ -53,3 +53,14 @@ all installed (system) extensions.
 Note that `uploads` will not be exposed by default. Depending on your setup,
 you might consider linking some or all folders to the `web` as well.
 
+To do so you can add the following configuration to your root composer.json file:
+
+```json
+    "extra": {
+        "typo3/cms": {
+            "public-core-folders": [
+                "uploads"
+            ]
+        }
+    }
+```
