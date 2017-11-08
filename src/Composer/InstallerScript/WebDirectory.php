@@ -107,6 +107,7 @@ class WebDirectory implements InstallerScript
             'fileadmin',
             'typo3temp/assets'
         ];
+        $coreLinks = array_merge($coreLinks, (array) $this->pluginConfig->get('public-core-folders'));
 
         $webDir = $this->filesystem->normalizePath($this->pluginConfig->get('web-dir'));
         $rootDir = $this->filesystem->normalizePath($this->pluginConfig->get('root-dir'));
