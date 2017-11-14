@@ -26,7 +26,9 @@ use TYPO3\CMS\Composer\Plugin\Core\InstallerScript;
 class DummyEntryPoints implements InstallerScript
 {
     /**
-     * Prepare the web directory with symlinks
+     * Prepare the root directory with dummy entry points
+     *
+     * The "real" entry points are in the web directory.
      *
      * @param Event $event
      * @return bool
