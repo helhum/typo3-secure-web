@@ -12,7 +12,8 @@
         }
     ],
     "require": {
-        "helhum/typo3-composer-setup": ">=0.2.0 <0.5.0"
+        "typo3/cms-composer-installers": "^1.4 || ^2.0",
+        "helhum/typo3-composer-setup": "^0.5.0"
     },
     "conflict": {
         "typo3/cms": "<8.7.8",
@@ -31,7 +32,7 @@
         "typo3/cms": {
             "cms-package-dir": "{$vendor-dir}/typo3/cms",
             "root-dir": "typo3",
-            "web-dir": "web"
+            "web-dir": "public"
         },
         "helhum/typo3-console": {
             "install-extension-dummy": "0"
