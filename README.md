@@ -38,8 +38,8 @@ Put the following in your root composer.json file:
     "extra": {
         "typo3/cms": {
             "cms-package-dir": "{$vendor-dir}/typo3/cms",
-            "root-dir": "typo3",
-            "web-dir": "web"
+            "root-dir": "private",
+            "web-dir": "public"
         }
     }
 ```
@@ -51,5 +51,4 @@ the entry scripts and links to `fileadmin`, `typo3temp/assets` and , `Resources/
 all installed (system) extensions.
 
 Note that `uploads` will not be exposed by default. Depending on your setup,
-you might consider linking some or all folders to the `web` as well.
-
+you might want to consider linking some or all folders to `public` folder as well.
