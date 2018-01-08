@@ -37,18 +37,22 @@ Put the following in your root composer.json file:
 ```json
     "extra": {
         "typo3/cms": {
-            "cms-package-dir": "{$vendor-dir}/typo3/cms",
             "root-dir": "private",
             "web-dir": "public"
         }
     }
 ```
 
-This package will then set up the web directory inside the `web` folder
-and TYPO3 inside the `typo3` folder. In `typo3` will look familiar and will contain
-`typo3`, `typo3conf`, `fileadmin`, `typo3temp`, `uploads` folders, while `web` will only have
+This package will then set up the web server document root inside the `public` folder
+and TYPO3 inside the `private` folder. The `private` folder will look familiar and will contain
+`typo3`, `typo3conf`, `fileadmin`, `typo3temp`, `uploads` folders, while `public` will only have
 the entry scripts and links to `fileadmin`, `typo3temp/assets` and , `Resources/Public` of
 all installed (system) extensions.
 
 Note that `uploads` will not be exposed by default. Depending on your setup,
 you might want to consider linking some or all folders to `public` folder as well.
+
+## Important note
+
+While it would still be possible to require `typo3/cms` (the complete TYPO3 package) for TYPO3 version
+8.7, it is not recommended any more and won't work with TYPO3 9.
