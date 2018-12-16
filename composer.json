@@ -13,14 +13,15 @@
     ],
     "require": {
         "typo3/cms-composer-installers": "^1.4 || ^2.0",
-        "helhum/typo3-composer-setup": "^0.5.0"
+        "helhum/typo3-composer-setup": "^0.5.4"
     },
     "conflict": {
-        "typo3/cms": "<8.7.8",
-        "typo3/cms-core": "<8.7.8"
+        "helhum/typo3-composer-setup": "<0.5.4",
+        "typo3/cms": "<8.7.10",
+        "typo3/cms-core": "<8.7.10"
     },
     "require-dev": {
-        "typo3/cms": "dev-TYPO3_8-7 as 8.7.8",
+        "typo3/cms-core": "^8.7.10 || ^9.5.2",
         "typo3-console/php-server-command": "^0.1.0"
     },
     "autoload": {
@@ -30,12 +31,8 @@
     },
     "extra": {
         "typo3/cms": {
-            "cms-package-dir": "{$vendor-dir}/typo3/cms",
-            "root-dir": "typo3",
+            "root-dir": "private",
             "web-dir": "public"
-        },
-        "helhum/typo3-console": {
-            "install-extension-dummy": "0"
         }
     }
 }

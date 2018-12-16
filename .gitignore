@@ -1,4 +1,4 @@
 /vendor
-/typo3
-/web
+/private
+/public
 /composer.lock

@@ -17,7 +17,9 @@ namespace Helhum\Typo3SecureWeb\Composer;
 
 use Composer\Script\Event;
 use Composer\Semver\Constraint\EmptyConstraint;
+use Helhum\Typo3ComposerSetup\Composer\InstallerScript\EntryPoint;
 use Helhum\Typo3ComposerSetup\Composer\InstallerScript\RootDirectory;
+use Helhum\Typo3ComposerSetup\Composer\Typo3EntryPointFinder;
 use Helhum\Typo3SecureWeb\Composer\InstallerScript\DummyEntryPoints;
 use Helhum\Typo3SecureWeb\Composer\InstallerScript\WebDirectory;
 use TYPO3\CMS\Composer\Plugin\Config;
@@ -48,6 +50,21 @@ class InstallerScripts implements InstallerScriptsRegistration
             );
         }
         if ($rootDir !== $webDir) {
+            $entryPointFinder = new Typo3EntryPointFinder(
+                $composer->getRepositoryManager()->getLocalRepository(),
+                $composer->getInstallationManager()
+            );
+            foreach ($entryPointFinder->find($webDir) as $entryPoint) {
+                $scriptDispatcher->addInstallerScript(
+                    new EntryPoint(
+                        $entryPoint['source'],
+                        $entryPoint['target'],
+                        '    chdir(getenv(\'TYPO3_PATH_ROOT\'));'
+                    ),
+                    40
+                );
+            }
+
             $scriptDispatcher->addInstallerScript(
                 new WebDirectory(),
                 70
