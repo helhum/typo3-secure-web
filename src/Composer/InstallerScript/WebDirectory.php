@@ -114,11 +114,15 @@ class WebDirectory implements InstallerScript
         foreach ($coreLinks as $link) {
             $source = $rootDir . '/' . $link;
             $target = $webDir . '/' . $link;
-            $this->filesystem->ensureDirectoryExists($source);
-            $links[] = [
-                'source' => $source,
-                'target' => $target,
-            ];
+            try {
+                $this->filesystem->ensureDirectoryExists($source);
+                $links[] = [
+                    'source' => $source,
+                    'target' => $target,
+                ];
+            } catch (\Throwable $e) {
+                $this->io->writeError(sprintf('<warning>Could not create directory "%s". Symlink in document root will not be created.</warning>', $link));
+            }
         }
 
         return $links;
