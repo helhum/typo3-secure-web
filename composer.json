@@ -2,7 +2,7 @@
     "name": "helhum/typo3-secure-web",
     "description": "Set up secure TYPO3 web directory containing only public assets",
     "type": "library",
-    "license": "GPL-2.0+",
+    "license": "GPL-2.0-or-later",
     "authors": [
         {
             "name": "Helmut Hummel",
