@@ -50,7 +50,8 @@ the entry scripts and links to `fileadmin`, `typo3temp/assets` and , `Resources/
 all installed (system) extensions.
 
 Note that `uploads` will not be exposed by default. Depending on your setup,
-you might want to consider linking some or all folders to `public` folder as well.
+you might want to consider linking some or all folders or files like sitemaps
+to `public` folder as well.
 
 ## Important note
 
