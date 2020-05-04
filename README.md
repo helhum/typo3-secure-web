@@ -1,30 +1,9 @@
 # helhum/typo3-secure-web
 
-This is a composer package that uses typo3/cms-composer-installers
-that aims to create a web directory for TYPO3 which only contains the entry scripts
-and links to public assets. No configuration, no log files will be exposed any more.
+This is a composer package that aims to create a web directory for TYPO3,
+which only contains the entry scripts and links to public assets.
 
-This package currently only works with `typo3/cms` `^8.7.8` or higher.
-
-Also note, that with this package installed, only explicitly required system extension
-are copied to the web directory. Require them in your root composer.json or the composer.json
-of any installed package.
-
-All required system extensions are already required with this package:
-
-```json
-    "typo3/cms-backend": "^8.7",
-    "typo3/cms-core": "^8.7",
-    "typo3/cms-extbase": "^8.7",
-    "typo3/cms-extensionmanager": "^8.7",
-    "typo3/cms-filelist": "^8.7",
-    "typo3/cms-fluid": "^8.7",
-    "typo3/cms-frontend": "^8.7",
-    "typo3/cms-install": "^8.7",
-    "typo3/cms-lang": "^8.7",
-    "typo3/cms-recordlist": "^8.7",
-    "typo3/cms-saltedpassword": "^8.7"
-```
+This package works with all TYPO3 versions higher than 8.7.8.
 
 ## Installation
 
@@ -50,6 +29,9 @@ familiar and will contain `typo3`, `typo3conf`, `fileadmin`, `typo3temp`,
 `fileadmin`, `typo3temp/assets` and , `Resources/Public` of all installed
 (system) extensions.
 
-Note that `uploads` will not be exposed by default. Depending on your setup,
-you might want to consider linking some or all folders or files like sitemaps
-to `public` folder as well.
+Note that `uploads` will not be exposed, because most of the files that are put into
+this folder by extensions are meant to be public. Depending on the extgensions you use,
+you might want to consider linking **some** of the files or folders
+to `public` folder as well. But be sure to only include files or folders that are really meant
+to be publicly accessible. Exposing the complete `uploads` folder can be considered an anti pattern
+and should be avoided.
