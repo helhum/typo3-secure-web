@@ -53,9 +53,3 @@ familiar and will contain `typo3`, `typo3conf`, `fileadmin`, `typo3temp`,
 Note that `uploads` will not be exposed by default. Depending on your setup,
 you might want to consider linking some or all folders or files like sitemaps
 to `public` folder as well.
-
-## Important note
-
-While it would still be possible to require `typo3/cms` (the complete TYPO3
-package) for TYPO3 version 8.7, it is not recommended any more and won't work
-with TYPO3 9.
