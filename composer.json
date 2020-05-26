@@ -21,7 +21,7 @@
         "typo3/cms-core": "<8.7.10"
     },
     "require-dev": {
-        "typo3/cms-core": "^8.7.10 || ^9.5.2",
+        "typo3/cms-core": "^8.7.10 || ^9.5.2 || ^10.4",
         "typo3-console/php-server-command": "^0.1.0"
     },
     "autoload": {
