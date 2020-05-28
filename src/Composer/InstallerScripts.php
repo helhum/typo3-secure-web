@@ -16,7 +16,6 @@ namespace Helhum\Typo3SecureWeb\Composer;
  */
 
 use Composer\Script\Event;
-use Composer\Semver\Constraint\EmptyConstraint;
 use Helhum\Typo3ComposerSetup\Composer\InstallerScript\EntryPoint;
 use Helhum\Typo3ComposerSetup\Composer\InstallerScript\RootDirectory;
 use Helhum\Typo3ComposerSetup\Composer\Typo3EntryPointFinder;
@@ -41,7 +40,7 @@ class InstallerScripts implements InstallerScriptsRegistration
         $pluginConfig = Config::load($composer);
         $rootDir = $pluginConfig->get('root-dir');
         $webDir = $pluginConfig->get('web-dir');
-        $typo3CmsPackage = $event->getComposer()->getRepositoryManager()->getLocalRepository()->findPackage('typo3/cms', new EmptyConstraint());
+        $typo3CmsPackage = $event->getComposer()->getRepositoryManager()->getLocalRepository()->findPackage('typo3/cms', '*');
 
         if ($typo3CmsPackage && !class_exists(\Helhum\Typo3NoSymlinkInstall\Composer\InstallerScripts::class)) {
             $scriptDispatcher->addInstallerScript(
