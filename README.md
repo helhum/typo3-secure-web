@@ -30,7 +30,7 @@ familiar and will contain `typo3`, `typo3conf`, `fileadmin`, `typo3temp`,
 (system) extensions.
 
 Note that `uploads` will not be exposed, because most of the files that are put into
-this folder by extensions are meant to be public. Depending on the extgensions you use,
+this folder by extensions are not meant to be public. Depending on the extensions you use,
 you might want to consider linking **some** of the files or folders
 to `public` folder as well. But be sure to only include files or folders that are really meant
 to be publicly accessible. Exposing the complete `uploads` folder can be considered an anti pattern
