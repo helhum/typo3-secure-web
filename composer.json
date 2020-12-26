@@ -12,17 +12,15 @@
         }
     ],
     "require": {
-        "typo3/cms-composer-installers": "^1.4 || ^2.0 || ^3.0",
-        "helhum/typo3-composer-setup": "^0.5.4"
-    },
-    "conflict": {
-        "helhum/typo3-composer-setup": "<0.5.4",
-        "typo3/cms": "<8.7.10",
-        "typo3/cms-core": "<8.7.10"
+        "typo3/cms-composer-installers": "^3.0",
+        "typo3/cms-core": ">=9.5.20"
     },
     "require-dev": {
-        "typo3/cms-core": "^8.7.10 || ^9.5.2 || ^10.4",
-        "typo3-console/php-server-command": "^0.1.0"
+        "typo3/cms-filelist": "@dev",
+        "typo3-console/php-server-command": "@dev"
+    },
+    "conflict": {
+        "typo3/cms": "*"
     },
     "autoload": {
         "psr-4": {

@@ -1,4 +1,6 @@
-/vendor
+/composer.lock
+/config
 /private
 /public
-/composer.lock
+/var
+/vendor
