@@ -2,7 +2,6 @@
 declare(strict_types=1);
 namespace Helhum\Typo3SecureWeb\Composer\InstallerScript;
 
-use Composer\Composer;
 use Composer\Script\Event;
 use TYPO3\CMS\Composer\Plugin\Config;
 use TYPO3\CMS\Composer\Plugin\Core\InstallerScript;
@@ -27,7 +26,6 @@ class DummyEntryPoints implements InstallerScript
         $composer = $event->getComposer();
         $pluginConfig = Config::load($composer);
         $rootDir = $pluginConfig->get('root-dir');
-        $webDir = $pluginConfig->get('web-dir');
 
         $dummyEntryPoints = [
             '/index.php',
@@ -36,9 +34,7 @@ class DummyEntryPoints implements InstallerScript
         ];
 
         foreach ($dummyEntryPoints as $dummyEntryPoint) {
-            if (file_exists($webDir . $dummyEntryPoint)) {
-                file_put_contents($rootDir . $dummyEntryPoint, self::dummyPhpCode);
-            }
+            file_put_contents($rootDir . $dummyEntryPoint, self::dummyPhpCode);
         }
 
         return true;
