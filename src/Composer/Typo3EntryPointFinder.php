@@ -40,20 +40,19 @@ class Typo3EntryPointFinder
 
     public function find(string $targetPath): array
     {
-        $frontendPackage = $this->repository->findPackage('typo3/cms-frontend', '*');
-        $frontendPackagePath = $this->installationManager->getInstallPath($frontendPackage);
-        $backendPackage = $this->repository->findPackage('typo3/cms-backend', '*');
-        $backendPackagePath = $this->installationManager->getInstallPath($backendPackage);
-        $installPackage = $this->repository->findPackage('typo3/cms-install', '*');
-        $installPackagePath = $this->installationManager->getInstallPath($installPackage);
-
-        $entryPoints['frontend']['source'] = $frontendPackagePath . self::defaultEntryPoints['frontend']['source'];
-        $entryPoints['backend']['source'] = $backendPackagePath . self::defaultEntryPoints['backend']['source'];
-        $entryPoints['install']['source'] = $installPackagePath . self::defaultEntryPoints['install']['source'];
-
-        $entryPoints['frontend']['target'] = $targetPath . self::defaultEntryPoints['frontend']['target'];
-        $entryPoints['backend']['target'] = $targetPath . self::defaultEntryPoints['backend']['target'];
-        $entryPoints['install']['target'] = $targetPath . self::defaultEntryPoints['install']['target'];
+        $entryPoints = [];
+        if ($frontendPackage = $this->repository->findPackage('typo3/cms-frontend', '*')) {
+            $entryPoints['frontend']['source'] = $this->installationManager->getInstallPath($frontendPackage) . self::defaultEntryPoints['frontend']['source'];
+            $entryPoints['frontend']['target'] = $targetPath . self::defaultEntryPoints['frontend']['target'];
+        }
+        if ($backendPackage = $this->repository->findPackage('typo3/cms-backend', '*')) {
+            $entryPoints['backend']['source'] = $this->installationManager->getInstallPath($backendPackage) . self::defaultEntryPoints['backend']['source'];
+            $entryPoints['backend']['target'] = $targetPath . self::defaultEntryPoints['backend']['target'];
+        }
+        if ($installPackage = $this->repository->findPackage('typo3/cms-install', '*')) {
+            $entryPoints['install']['source'] = $this->installationManager->getInstallPath($installPackage) . self::defaultEntryPoints['install']['source'];
+            $entryPoints['install']['target'] = $targetPath . self::defaultEntryPoints['install']['target'];
+        }
 
         return $entryPoints;
     }
