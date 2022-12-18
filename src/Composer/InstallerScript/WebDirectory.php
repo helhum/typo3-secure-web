@@ -86,7 +86,7 @@ class WebDirectory implements InstallerScript
 
         $coreLinks = [
             'fileadmin',
-            'typo3temp/assets',
+            'typo3temp',
         ];
 
         $webDir = $this->filesystem->normalizePath($this->pluginConfig->get('web-dir'));
