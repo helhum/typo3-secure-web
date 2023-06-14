@@ -12,7 +12,7 @@
         }
     ],
     "require": {
-        "typo3/cms-composer-installers": "^3.0",
+        "typo3/cms-composer-installers": "^5.0",
         "typo3/cms-core": ">=9.5.20"
     },
     "require-dev": {
