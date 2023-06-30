@@ -1,5 +1,13 @@
 # helhum/typo3-secure-web
 
+This package is superseded by TYPO3 Composer installers 4 and 5 (TYPO3 v11 and v12)
+and the native public/private resources handling.
+
+<details>
+<summary>
+    ℹ️ Show docs for TYPO3 11 (with composer installers 3) and lower
+</summary>
+
 This is a composer package that aims to create a web directory for TYPO3,
 which only contains the entry scripts and links to public assets.
 
@@ -31,3 +39,4 @@ folders, while `public` will only have the entry scripts and links to
 
 Note that if your FAL local storage(s) has(have) a different folder name than `fileadmin`,
 you need to create links to this(these) folder(s) in the `public` directory as well.
+</details>
